@@ -1,30 +1,6 @@
 import gradio as gr
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-
-model_id = "rengokucoder7/my-legacy-translator"
-
-print("Starting operational infrastructure compilation layers...")
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForCausalLM.from_pretrained(
-    model_id, 
-    torch_dtype=torch.float32, 
-    device_map="auto"
-)
-
-def translate_data_logic(legacy_code):
-    prompt = f"### Instruction:\nTranslate this legacy data structure into a modern JSON schema.\n\n### Input:\n{legacy_code}\n\n### Response:\n"
-    
-    inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(**inputs, max_new_tokens=512)
-    full_output = tokenizer.decode(outputs, skip_special_tokens=True)
-    
-    if "### Response:\n" in full_output:
-        clean_output = full_output.split("### Response:\n")[-1]
-    else:
-        clean_output = full_output
-        
-    return clean_output.strip()
+import requests
+import json
 
 # Institutional Monochrome Corporate Interface Specifications
 theme = gr.themes.Monochrome(
@@ -41,6 +17,44 @@ theme = gr.themes.Monochrome(
     button_primary_text_color="#FFFFFF"
 )
 
+def translate_data_logic(legacy_code):
+    if not legacy_code.strip():
+        return "SYSTEM_WARNING: Null input exception detected."
+        
+    prompt = f"### Instruction:\nTranslate this legacy data structure into a modern JSON schema.\n\n### Input:\n{legacy_code}\n\n### Response:\n"
+    API_URL = "https://huggingface.co"
+    
+    payload = {
+        "inputs": prompt,
+        "parameters": {"max_new_tokens": 512, "return_full_text": False}
+    }
+    
+    try:
+        response = requests.post(API_URL, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            if isinstance(result, list) and len(result) > 0:
+                full_output = result[0].get("generated_text", "")
+            elif isinstance(result, dict):
+                full_output = result.get("generated_text", str(result))
+            else:
+                full_output = str(result)
+                
+            if "### Response:\n" in full_output:
+                return full_output.split("### Response:\n")[-1].strip()
+            return full_output.strip()
+            
+        elif response.status_code == 503:
+            return "SYSTEM_NOTICE: Foundational model parameters initializing in backend cluster cache. Re-execute translation layer in 60 seconds."
+            
+        return f"OPERATIONAL_EXCEPTION: Error Code {response.status_code} - {response.text}"
+        
+    except requests.exceptions.Timeout:
+        return "OPERATIONAL_EXCEPTION: Request transmission timeout. Network execution pass terminated."
+    except Exception as e:
+        return f"SYSTEM_ERROR: {str(e)}"
+
 with gr.Blocks(theme=theme, title="Parity Labs - Autonomous Data Unification Layer") as demo:
     
     # Administrative Core Header Section
@@ -52,7 +66,7 @@ with gr.Blocks(theme=theme, title="Parity Labs - Autonomous Data Unification Lay
                 ### **Autonomous Data Unification Layer (ADUL) v1.0.0**
                 
                 ---
-                SYSTEM DEPLOYMENT STATUS: `ACTIVE` | PRIVACY GATEWAY ENFORCEMENT: `ON-PREMISE COMPLIANCE`
+                SYSTEM DEPLOYMENT STATUS: `ACTIVE` | PRIVACY GATEWAY ENFORCEMENT: `HYBRID APIS COMPLIANCE`
                 """
             )
             
@@ -93,10 +107,10 @@ with gr.Blocks(theme=theme, title="Parity Labs - Autonomous Data Unification Lay
         """
         ---
         <p style='text-align: center; color: #64748B; font-size: 0.85em;'>
-        Confidentiality Notice: This system compiles schemas locally. Operational telemetry values conform to institutional data management parameters.
+        Confidentiality Notice: This interface routes transaction queries through secure architectural API layers. Operational parameters match target infrastructure compliance codes.
         </p>
         """
     )
 
-# Establish port binding to integrate with Render's infrastructure host rules
+# Enforce port binding configuration matching Render's gateway rules
 demo.launch(server_name="0.0.0.0", server_port=10000)

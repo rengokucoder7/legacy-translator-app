@@ -1,24 +1,21 @@
 import gradio as gr
-import spaces
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 model_id = "rengokucoder7/my-legacy-translator"
 
-print("Starting application layers...")
+print("Starting operational infrastructure compilation layers...")
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(
     model_id, 
-    torch_dtype=torch.float16, 
+    torch_dtype=torch.float32, 
     device_map="auto"
 )
 
-# ZeroGPU Activation Layer
-@spaces.GPU
 def translate_data_logic(legacy_code):
     prompt = f"### Instruction:\nTranslate this legacy data structure into a modern JSON schema.\n\n### Input:\n{legacy_code}\n\n### Response:\n"
     
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    inputs = tokenizer(prompt, return_tensors="pt")
     outputs = model.generate(**inputs, max_new_tokens=512)
     full_output = tokenizer.decode(outputs, skip_special_tokens=True)
     
@@ -29,73 +26,77 @@ def translate_data_logic(legacy_code):
         
     return clean_output.strip()
 
+# Institutional Monochrome Corporate Interface Specifications
 theme = gr.themes.Monochrome(
-    primary_hue="teal",
-    secondary_hue="cyan",
+    primary_hue="slate",
+    secondary_hue="slate",
     neutral_hue="slate",
 ).set(
-    body_background_fill="#0B0F19",       # Deep space cyber blue background
-    block_background_fill="#111827",      # Sleek card container dark gray
+    body_background_fill="#0F172A",       # Institutional dark gray background
+    block_background_fill="#1E293B",      # Secured system interface card containers
     block_border_width="1px",
-    block_border_color="#1F2937",         # Subtle matrix border lines
-    button_primary_background_fill="#0D9488", # Vibrant neon teal trigger buttons
-    button_primary_background_fill_hover="#14B8A6",
+    block_border_color="#334155",         # Standard network boundary line styling
+    button_primary_background_fill="#1E3A8A", # Dark corporate navy blue execution buttons
+    button_primary_background_fill_hover="#1E40AF",
     button_primary_text_color="#FFFFFF"
 )
 
-# Custom layout and layout styling structure
-with gr.Blocks(theme=theme, title="Autonomous Data Unification Layer") as demo:
+with gr.Blocks(theme=theme, title="Parity Labs - Autonomous Data Unification Layer") as demo:
     
-    # Header Section
+    # Administrative Core Header Section
     with gr.Row():
         with gr.Column(scale=1):
             gr.Markdown(
                 """
-                # Autonomous Data Unification Layer
-                ### Real-Time System Mapping & Structural Transformation Layer**
+                # Parity Labs | Enterprise System Infrastructure Console
+                ### **Autonomous Data Unification Layer (ADUL) v1.0.0**
                 
                 ---
-                
+                SYSTEM DEPLOYMENT STATUS: `ACTIVE` | PRIVACY GATEWAY ENFORCEMENT: `ON-PREMISE COMPLIANCE`
                 """
             )
             
-    # Interactive Workspace Columns
+    # System Architecture Data Panels
     with gr.Row():
         with gr.Column(scale=1):
-            gr.Markdown("###  Source Legacy Schema Input")
+            gr.Markdown("### Source Legacy System Schema Input")
             input_box = gr.Textbox(
                 lines=12, 
-                placeholder="Paste raw COBOL copybooks, archaic Fortran structures, or unindexed legacy data syntax blocks here...", 
-                label="Unstructured Target System Log"
+                placeholder="Insert target mainframe records, structural source strings, or legacy data layouts...", 
+                label="Source Enterprise Syntax Block"
             )
-            submit_btn = gr.Button(" Run Real-Time Mapping Translation", variant="primary")
+            submit_btn = gr.Button("Execute Real-Time Schema Compilation", variant="primary")
             
         with gr.Column(scale=1):
-            gr.Markdown("###  Autonomous Modernized Output")
+            gr.Markdown("### Target Infrastructure Unified Output")
             output_box = gr.Textbox(
                 lines=14,
-                label="Target Infrastructure Compilation Stream",
+                label="Target Schema Target Format Stream",
                 interactive=False
             )
             
-    # Practical Quick-Test Reference Component
+    # Connect UI button trigger directly to the logic engine loop
+    submit_btn.click(fn=translate_data_logic, inputs=input_box, outputs=output_box)
+            
+    # Reference Pipeline Evaluation Dataset Component
     with gr.Row():
         gr.Examples(
             examples=[
                 ["01  CUST-RECORD.\n    05  CUST-ID   PIC X(12).\n    05  CUST-BAL  PIC S9(7)V99 COMP-3."]
             ],
             inputs=input_box,
-            label=" Click to Load a Live Mainframe COBOL Variable Example"
+            label="System Test Schema: Mainframe COBOL Framework Reference Data"
         )
         
-    # Institutional Footer
+    # Regulatory Footer Notice
     gr.Markdown(
         """
         ---
-        <p style='text-align: center; color: #4B5563; font-size: 0.85em;'>
-        Proprietary Model Engine running on fine-tuned specialized code parameters. Loss optimized to 0.36. Safe for institutional banking application pilots.
+        <p style='text-align: center; color: #64748B; font-size: 0.85em;'>
+        Confidentiality Notice: This system compiles schemas locally. Operational telemetry values conform to institutional data management parameters.
         </p>
         """
     )
 
-demo.launch()
+# Establish port binding to integrate with Render's infrastructure host rules
+demo.launch(server_name="0.0.0.0", server_port=10000)

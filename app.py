@@ -24,7 +24,7 @@ def translate_data_logic(legacy_code):
     prompt = f"Translate this legacy data structure into a modern JSON schema. Return ONLY the raw valid JSON output code, no text explanation.\n\nInput:\n{legacy_code}"
     
     # 🌟 PASTE YOUR ACTIVE SECURITY ACCESS TOKEN KEY STRINGS INSIDE THE EMPTY QUOTES BELOW
-    HF_TOKEN = "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"
+    HF_TOKEN = "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"
     
     try:
         # Initialize the official serverless client
